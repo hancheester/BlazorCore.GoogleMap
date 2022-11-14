@@ -13,6 +13,7 @@
     <Copyright>©2022 Han Chee Tan</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Description>Blazor component that renders and manages Google map.</Description>
+    <RepositoryUrl>https://github.com/hancheester/BlazorCore.GoogleMap</RepositoryUrl>
   </PropertyGroup>
 
 
