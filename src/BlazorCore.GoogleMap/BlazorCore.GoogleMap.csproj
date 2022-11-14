@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Han Chee Tan</Authors>
+    <PackageTags>blazor;jsinterop;javasript;google map;</PackageTags>
+    <Version>$(VersionPrefix)</Version>
+    <VersionPrefix>1.0.1.1</VersionPrefix>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>©2022 Han Chee Tan</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Description>Blazor component that renders and manages Google map.</Description>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorCore.JSInterop" Version="1.0.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.10" />
+  </ItemGroup>
+
+</Project>
