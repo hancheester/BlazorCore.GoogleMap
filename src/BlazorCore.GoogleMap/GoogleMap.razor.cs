@@ -1,7 +1,5 @@
-using BlazorCore.GoogleMap;
 using BlazorCore.JSInterop.Geolocation;
 using Microsoft.AspNetCore.Components;
-using System.Diagnostics;
 using System.Dynamic;
 
 namespace BlazorCore.GoogleMap;
@@ -104,6 +102,7 @@ public partial class GoogleMap : IAsyncDisposable
             _drawingMode = value;
         }
     }
+    [Parameter] public MapType MapType { get; set; } = MapType.roadmap;
     [Parameter] public bool? DrawingControl { get; set; }
     [Parameter] public PolygonOptions? PolygonOptions { get; set; } = null;
     [Parameter] public EventCallback<string> OnMapInitialized { get; set; }
@@ -113,35 +112,7 @@ public partial class GoogleMap : IAsyncDisposable
     [Parameter] public EventCallback OnAfterRendered { get; set; }
     [Parameter] public bool CenterCurrentLocationOnLoad { get; set; } = false;
     [Parameter] public bool AnimateCenterChange { get; set; } = true;
-    [Parameter] public GeolocationData? Center
-    {
-        get => _center;
-        set
-        {
-            if (_mapInitialized && !_isDragging && _center?.ToString() != value?.ToString())
-            {
-                InvokeAsync(async () =>
-                {
-                    if (Center?.HasCoordinates ?? false)
-                    {
-                        if (AnimateCenterChange)
-                            await GoogleMapService.PanToAsync(Center.Latitude.Value, Center.Longitude.Value);
-                        else
-                            await GoogleMapService.SetCenterAsync(Center.Latitude.Value, Center.Longitude.Value);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(Center?.Address))
-                    {
-                        if (AnimateCenterChange)
-                            await GoogleMapService.PanToAsync(Center.Address);
-                        else
-                            await GoogleMapService.SetCenterAsync(Center.Address);
-                    }
-                });
-            }
-
-            _center = value;
-        }
-    }
+    [Parameter] public GeolocationData? Center { get; set; } 
     [Parameter] public Bounds? Bounds
     {
         get => _bounds;
@@ -172,11 +143,21 @@ public partial class GoogleMap : IAsyncDisposable
         await GoogleMapService.InitMapAsync(
             apiKey: ApiKey,
             googleLibrary: GoogleLibrary,
+            mapType: MapType,
             mapContainerId: _mapContainerId,
             mapInitializedCallback: async (mapContainerId) =>
             {
                 if (CenterCurrentLocationOnLoad)
                     await CenterCurrentLocationOnMapAsync();
+
+                if (Center?.HasCoordinates ?? false)
+                {
+                    await SetCenterAsync(Center.Latitude.Value, Center.Longitude.Value);
+                }
+                else if (!string.IsNullOrWhiteSpace(Center?.Address))
+                {
+                    await SetCenterAsync(Center.Address);
+                }
 
                 await SetOptionsAsync();
 
@@ -259,6 +240,16 @@ public partial class GoogleMap : IAsyncDisposable
         await GoogleMapService.MaskMapAsync(shape, polygonOptions);
     }
 
+    public async Task SetCustomOverlayAsync(string imageSrc, double southWestLatitude, double southWestLongitude, double northEastLatitude, double northEastLongitude)
+    {
+        await GoogleMapService.SetCustomOverlayAsync(imageSrc, southWestLatitude, southWestLongitude, northEastLatitude, northEastLongitude);
+    }
+
+    public async Task ClearCustomOverlayAsync()
+    {
+        await GoogleMapService.ClearCustomOverlayAsync();
+    }
+
     public async Task CenterCurrentLocationOnMapAsync()
     {
         await GeolocationService.GetCurrentPositionAsync(LocationResult, false, TimeSpan.FromSeconds(10));
@@ -339,7 +330,8 @@ public partial class GoogleMap : IAsyncDisposable
     {
         if (pos?.IsSuccess ?? false)
         {
-            await GoogleMapService.SetCenterAsync(pos.Coordinates.Latitude, pos.Coordinates.Longitude);
+            await SetCenterAsync(pos.Coordinates.Latitude, pos.Coordinates.Longitude);
+
             Center = new GeolocationData(pos.Coordinates.Latitude, pos.Coordinates.Longitude);
 
             if (OnCurrentLocationDetected.HasDelegate)
@@ -347,6 +339,22 @@ public partial class GoogleMap : IAsyncDisposable
                 await OnCurrentLocationDetected.InvokeAsync(Center);
             }
         }
+    }
+
+    private async Task SetCenterAsync(double latitude, double longitude)
+    {
+        if (AnimateCenterChange)
+            await GoogleMapService.PanToAsync(latitude, longitude);
+        else
+            await GoogleMapService.SetCenterAsync(latitude, longitude);
+    }
+
+    private async Task SetCenterAsync(string address)
+    {
+        if (AnimateCenterChange)
+            await GoogleMapService.PanToAsync(address);
+        else
+            await GoogleMapService.SetCenterAsync(address);
     }
 
     public async ValueTask DisposeAsync()

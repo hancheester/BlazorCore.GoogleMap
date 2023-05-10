@@ -1,9 +1,9 @@
-﻿export function init(apiKey, libraries, elementId, eventDotNetRef) {
+﻿export function init(apiKey, libraries, mapTypeId, elementId, eventDotNetRef) {
     if (!apiKey || !elementId || !eventDotNetRef) {
         return;
     }
 
-    storeMapInfo(_maps, elementId, eventDotNetRef, libraries);
+    storeMapInfo(_maps, elementId, eventDotNetRef, libraries, mapTypeId);
 
     let googleMapApiUrl = "https://maps.googleapis.com/maps/api/js?key=";
     let scriptsIncluded = false;
@@ -41,7 +41,6 @@ window.initGoogleMaps = () => {
     for (let i = 0; i < _maps.length; i++) {
         let elementId = _maps[i].key;
         let mapInfo = _maps[i].value;
-        let libraries = _maps[i].value.libraries
 
         if (mapInfo.map) { //Map already created
             continue;
@@ -53,9 +52,12 @@ window.initGoogleMaps = () => {
             continue;
         }
 
+        let mapTypeId = _maps[i].value.mapTypeId;
         let map = new google.maps.Map(el);
         map.elementId = elementId;
+        map.mapTypeId = mapTypeId;
 
+        let libraries = _maps[i].value.libraries;
         if (libraries.includes("drawing") && !mapInfo.drawingManager) {
             let drawingManager = new google.maps.drawing.DrawingManager({
                 map: map,
@@ -87,7 +89,6 @@ window.initGoogleMaps = () => {
                             });
 
                             google.maps.event.addListener(path, 'set_at', function () {
-                                console.log('set_at!');
                                 updatePolygonBounds(map.elementId, polygon.id);
                             });
                         });
@@ -130,7 +131,7 @@ window.initGoogleMaps = () => {
 
 let _maps = [];
 
-function storeMapInfo(dict, elementId, eventDotNetRef, libraries) {
+function storeMapInfo(dict, elementId, eventDotNetRef, libraries, mapTypeId) {
     let elementFound = false;
     for (let i = 0; i < dict.length; i++) {
         if (dict[i].key === elementId) {
@@ -145,9 +146,11 @@ function storeMapInfo(dict, elementId, eventDotNetRef, libraries) {
                 ref: eventDotNetRef,
                 map: null,
                 libraries: libraries,
+                mapTypeId: mapTypeId,
                 drawingManager: null,
                 polygons: [],
                 mask: null,
+                overlay: null,
             },
         });
     }
@@ -278,6 +281,92 @@ export function maskMap(elementId, shape, polygonOptions) {
 
             worldPoly.setMap(mapWithDotnetRef.map);
             mapWithDotnetRef.mask = worldPoly;
+        }
+    }
+}
+export function setCustomOverlay(elementId, imageSrc, southWestLatitude, southWestLongitude, northEastLatitude, northEastLongitude) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            const bounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(southWestLatitude, southWestLongitude),
+                new google.maps.LatLng(northEastLatitude, northEastLongitude)
+            );
+
+            class CustomOverlay extends google.maps.OverlayView {
+                bounds;
+                imageSrc;
+                div;
+
+                constructor(bounds, imageSrc) {
+                    super();
+                    this.bounds = bounds;
+                    this.imageSrc = imageSrc;
+                }
+
+                /**
+                 * We must implement three methods: onAdd(), draw(), and onRemove().
+                 * https://developers.google.com/maps/documentation/javascript/reference/overlay-view#OverlayView
+                 */
+                onAdd() {
+                    this.div = document.createElement("div");
+                    this.div.style.borderStyle = "none";
+                    this.div.style.borderWidth = "0";
+                    this.div.style.position = "absolute";
+
+                    const img = document.createElement("img");
+                    img.src = this.imageSrc;
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.position = "absolute";
+                    this.div.appendChild(img);
+
+                    const panes = this.getPanes();
+                    panes.overlayLayer.appendChild(this.div);
+                }
+
+                draw() {
+                    const overlayProjection = this.getProjection();
+                    const sw = overlayProjection.fromLatLngToDivPixel(this.bounds.getSouthWest());
+                    const ne = overlayProjection.fromLatLngToDivPixel(this.bounds.getNorthEast());
+                    if (this.div) {
+                        this.div.style.left = sw.x + "px";
+                        this.div.style.top = ne.y + "px";
+                        this.div.style.width = ne.x - sw.x + "px";
+                        this.div.style.height = sw.y - ne.y + "px";
+                    }
+                }
+
+                onRemove() {
+                    if (this.div) {
+                        this.div.parentNode.removeChild(this.div);
+                        delete this.div;
+                    }
+                }
+
+                /**
+                 * Custom methods
+                 */
+                removeFromDOM() {
+                    if (this.getMap()) {
+                        this.setMap(null);
+                    } else {
+                        this.setMap(map);
+                    }
+                }
+            }
+
+            const overlay = new CustomOverlay(bounds, imageSrc);
+            overlay.setMap(mapWithDotnetRef.map);
+            mapWithDotnetRef.overlay = overlay;
+        }
+    }
+}
+export function clearCustomOverlay(elementId) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map && mapWithDotnetRef.overlay) {
+            overlay.removeFromDOM();
         }
     }
 }

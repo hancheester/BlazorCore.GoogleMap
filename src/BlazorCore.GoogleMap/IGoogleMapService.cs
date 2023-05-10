@@ -5,13 +5,15 @@ namespace BlazorCore.GoogleMap;
 public interface IGoogleMapService : IAsyncDisposable
 {
     Task ClearAllPolygonsAsync();
+    Task ClearCustomOverlayAsync();
     Task<ulong> ComputeAreaAsync(string shapeId);
     Task DrawPolygonAsync(Shape shape, PolygonOptions? polygonOptions = null, bool editable = false);
     Task FitBoundsAsync(double eastLongitude, double northLatitude, double southLatitude, double westLongitude);
     Task InitMapAsync(
         string apiKey, 
         string mapContainerId, 
-        GoogleLibrary googleLibrary = GoogleLibrary.None, 
+        GoogleLibrary googleLibrary = GoogleLibrary.None,
+        MapType mapType = MapType.roadmap,
         Func<string, Task>? mapInitializedCallback = null,
         Func<string, LatLng[], Task>? polygonUpdated = null,
         Func<string, LatLng[], Task>? drawingPolygonCompletedCallback = null);
@@ -21,6 +23,7 @@ public interface IGoogleMapService : IAsyncDisposable
     Task ResizeMapAsync();
     Task SetCenterAsync(double latitude, double longitude);
     Task SetCenterAsync(string address);
+    Task SetCustomOverlayAsync(string imageSrc, double southWestLatitude, double southWestLongitude, double northEastLatitude, double northEastLongitude);
     Task SetDrawingModeAsync(OverlayType? drawingMode = null);
     Task SetDrawingOptionsAsync(ExpandoObject options);
     Task SetOptionsAsync(ExpandoObject options);

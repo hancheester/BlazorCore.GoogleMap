@@ -20,6 +20,7 @@ public sealed class GoogleMapService : IGoogleMapService
         string apiKey, 
         string mapContainerId,
         GoogleLibrary googleLibrary = GoogleLibrary.None,
+        MapType mapType = MapType.roadmap,
         Func<string, Task>? mapInitializedCallback = null,
         Func<string, LatLng[], Task>? polygonUpdated = null,
         Func<string, LatLng[], Task>? drawingPolygonCompletedCallback = null)
@@ -49,7 +50,7 @@ public sealed class GoogleMapService : IGoogleMapService
             libraries.Add(nameof(GoogleLibrary.Geometry).ToLower());
         }
 
-        await _mapsJs.InvokeVoidAsync("init", apiKey, string.Join(",", libraries), mapContainerId, _eventDotNetRef);
+        await _mapsJs.InvokeVoidAsync("init", apiKey, string.Join(",", libraries), mapType, mapContainerId, _eventDotNetRef);
     }
 
     public async Task SetCenterAsync(double latitude, double longitude)
@@ -146,6 +147,18 @@ public sealed class GoogleMapService : IGoogleMapService
             };
         }
         await _mapsJs.InvokeVoidAsync("maskMap", MapContainerId, shape, polygonOptions);
+    }
+
+    public async Task SetCustomOverlayAsync(string imageSrc, double southWestLatitude, double southWestLongitude, double northEastLatitude, double northEastLongitude)
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("setCustomOverlay", MapContainerId, imageSrc, southWestLatitude, southWestLongitude, northEastLatitude, northEastLongitude);
+    }
+
+    public async Task ClearCustomOverlayAsync()
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("clearCustomOverlay", MapContainerId);
     }
 
     private async Task CheckJsObjectAsync()
