@@ -6,4 +6,5 @@ public enum GoogleLibrary
     None,
     Drawing,
     Geometry,
+    Marker,
 }

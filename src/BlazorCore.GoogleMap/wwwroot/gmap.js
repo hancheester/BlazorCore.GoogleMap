@@ -31,7 +31,7 @@
     document.head.appendChild(polyScriptTag);
 
     let mapScriptTag = document.createElement("script");
-    mapScriptTag.src = googleMapApiUrl + apiKey + "&libraries=" + libraries + "&callback=initGoogleMaps&v=weekly";
+    mapScriptTag.src = googleMapApiUrl + apiKey + "&libraries=" + libraries + "&callback=initGoogleMaps&v=beta";
     mapScriptTag.defer = true;
     document.head.appendChild(mapScriptTag);
 }
@@ -53,9 +53,11 @@ window.initGoogleMaps = () => {
         }
 
         let mapTypeId = _maps[i].value.mapTypeId;
-        let map = new google.maps.Map(el);
+        let map = new google.maps.Map(el, {
+            mapId: elementId,
+            mapTypeId: mapTypeId
+        });
         map.elementId = elementId;
-        map.mapTypeId = mapTypeId;
 
         let libraries = _maps[i].value.libraries;
         if (libraries.includes("drawing") && !mapInfo.drawingManager) {
@@ -149,6 +151,8 @@ function storeMapInfo(dict, elementId, eventDotNetRef, libraries, mapTypeId) {
                 mapTypeId: mapTypeId,
                 drawingManager: null,
                 polygons: [],
+                circles: [],
+                advancedMarkers: [],
                 mask: null,
                 overlay: null,
             },
@@ -374,8 +378,8 @@ function getWorldPoly(polygonOptions, shape) {
     let shapeCoords = [];
     if (shape) {
         shape.bounds.forEach(x => shapeCoords.push({
-            lat: x.latitude,
-            lng: x.longitude,
+            lat: x.lat,
+            lng: x.lng,
         }));
     }
 
@@ -443,8 +447,8 @@ export function drawPolygon(elementId, shape, polygonOptions, editable) {
         if (mapWithDotnetRef && mapWithDotnetRef.map) {
             let paths = [];
             shape.bounds.forEach(x => paths.push({
-                lat: x.latitude,
-                lng: x.longitude,
+                lat: x.lat,
+                lng: x.lng,
             }));
 
             if (!polygonOptions) {
@@ -489,6 +493,151 @@ export function computeArea(elementId, shapeId) {
         }
     }
 }
+export function drawCircle(elementId, shape, circleOptions) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            if (!circleOptions) {
+                circleOptions = {};
+            }
+
+            const circle = new google.maps.Circle(circleOptions)
+
+            circle.id = shape.id;
+            circle.setMap(mapWithDotnetRef.map);
+
+            mapWithDotnetRef.circles.push(circle);
+        }
+    }
+}
+export function clearAllCircles(elementId) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            mapWithDotnetRef.circles.forEach(circle => circle.setMap(null));
+            mapWithDotnetRef.circles = [];
+        }
+    }
+}
+export function setCircleCenter(elementId, circleId, center) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            let circle = mapWithDotnetRef.circles.find(x => x.id == circleId);
+            if (circle) {
+                circle.setCenter(center);
+            }
+        }
+    }
+}
+
+//Google Marker
+export function drawAdvancedMarker(elementId, markerId, position, content) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            const contentTag = document.createElement("div");
+            contentTag.className = "marker";
+            contentTag.innerHTML = content;
+
+            //contentTag.innerHTML = `
+            //   <div class="marker">
+            //      <div class="icon">
+            //        ${content}
+            //      </div>
+            //      <div class="details">
+            //        <div class="info">
+            //          <div>
+            //            10 km/h
+            //          </div>
+            //          <div class="label">
+            //            Speed
+            //          </div>
+            //        </div>
+            //        <div class="info">
+            //          <div>
+            //            5 h 40 min
+            //          </div>
+            //          <div class="label">
+            //            State Duration
+            //          </div>
+            //        </div>
+            //        <div class="info">
+            //          <div>
+            //            SE
+            //          </div>
+            //          <div class="label">
+            //            Direction
+            //          </div>
+            //        </div>
+            //        <div class="info">
+            //          <div>
+            //            198 L
+            //          </div>
+            //          <div class="label">
+            //            Fuel Level
+            //          </div>
+            //        </div>
+            //      </div>
+            //    </div>
+            //`;
+
+            const marker = new google.maps.marker.AdvancedMarkerElement({
+                map: mapWithDotnetRef.map,
+                position: position,
+                content: contentTag,
+            });
+
+            if (markerId) {
+                marker.id = markerId;
+            }
+
+            marker.addEventListener("gmp-click", () => {
+                toggleClass(marker, "highlight");
+            });
+
+            mapWithDotnetRef.advancedMarkers.push(marker);
+        }
+    }
+}
+
+export function setAdvancedMarkerPosition(elementId, markerId, position) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            let marker = mapWithDotnetRef.advancedMarkers.find(x => x.id == markerId);
+
+            if (marker) {
+                marker.position = position;
+            }
+        }
+    }
+}
+
+export function setAdvancedMarkerContent(elementId, markerId, content) {
+    if (elementId) {
+        let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);
+        if (mapWithDotnetRef && mapWithDotnetRef.map) {
+            let marker = mapWithDotnetRef.advancedMarkers.find(x => x.id == markerId);
+
+            if (marker) {
+                marker.content.innerHTML = content;
+            }
+        }
+    }
+}
+
+function toggleClass(marker, className) {
+    if (marker.content.classList.contains(className)) {
+        marker.content.classList.remove(className);
+        marker.zIndex = null;
+    } else {
+        marker.content.classList.add(className);
+        marker.zIndex = 1;
+    }
+}
+
+
 function updatePolygonBounds(elementId, polygonId) {
     if (elementId) {
         let mapWithDotnetRef = getElementIdWithDotnetRef(_maps, elementId);

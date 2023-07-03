@@ -4,9 +4,12 @@ namespace BlazorCore.GoogleMap;
 
 public interface IGoogleMapService : IAsyncDisposable
 {
+    Task ClearAllCirclesAsync();
     Task ClearAllPolygonsAsync();
     Task ClearCustomOverlayAsync();
     Task<ulong> ComputeAreaAsync(string shapeId);
+    Task DrawAdvancedMarkerAsync(string markerId, LatLng position, string content);
+    Task DrawCircleAsync(Shape shape, CircleOptions? circleOptions = null);
     Task DrawPolygonAsync(Shape shape, PolygonOptions? polygonOptions = null, bool editable = false);
     Task FitBoundsAsync(double eastLongitude, double northLatitude, double southLatitude, double westLongitude);
     Task InitMapAsync(
@@ -21,8 +24,11 @@ public interface IGoogleMapService : IAsyncDisposable
     Task PanToAsync(double latitude, double longitude);
     Task PanToAsync(string address);
     Task ResizeMapAsync();
+    Task SetAdvancedMarkerContentAsync(string markerid, string content);
+    Task SetAdvancedMarkerPositionAsync(string markerid, LatLng position);
     Task SetCenterAsync(double latitude, double longitude);
     Task SetCenterAsync(string address);
+    Task SetCircleCenterAsync(string circleId, LatLng center);
     Task SetCustomOverlayAsync(string imageSrc, double southWestLatitude, double southWestLongitude, double northEastLatitude, double northEastLongitude);
     Task SetDrawingModeAsync(OverlayType? drawingMode = null);
     Task SetDrawingOptionsAsync(ExpandoObject options);

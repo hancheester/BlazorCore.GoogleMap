@@ -105,6 +105,7 @@ public partial class GoogleMap : IAsyncDisposable
     [Parameter] public MapType MapType { get; set; } = MapType.roadmap;
     [Parameter] public bool? DrawingControl { get; set; }
     [Parameter] public PolygonOptions? PolygonOptions { get; set; } = null;
+    [Parameter] public CircleOptions? CircleOptions { get; set; } = null;
     [Parameter] public EventCallback<string> OnMapInitialized { get; set; }
     [Parameter] public EventCallback<GeolocationData> OnCurrentLocationDetected { get; set; }
     [Parameter] public EventCallback<Shape> OnDrawingPolygonCompleted { get; set; }
@@ -209,6 +210,11 @@ public partial class GoogleMap : IAsyncDisposable
         await GoogleMapService.ClearAllPolygonsAsync();
     }
 
+    public async Task ClearAllCirclesAsync()
+    {
+        await GoogleMapService.ClearAllCirclesAsync();
+    }
+
     public async Task<ulong> ComputeAreaAsync(string shapeId)
     {
         return await GoogleMapService.ComputeAreaAsync(shapeId);
@@ -235,6 +241,42 @@ public partial class GoogleMap : IAsyncDisposable
         }
     }
 
+    public async Task DrawCircleAsync(Shape shape, CircleOptions? circleOptions = null)
+    {
+        if (circleOptions is not null)
+        {
+            await GoogleMapService.DrawCircleAsync(shape, circleOptions);
+        }
+        else if (CircleOptions is not null)
+        {
+            await GoogleMapService.DrawCircleAsync(shape, CircleOptions);
+        }
+        else
+        {
+            await GoogleMapService.DrawCircleAsync(shape);
+        }
+    }
+
+    public async Task DrawAdvancedMarkerAsync(string markerId, LatLng position, string content)
+    {
+        await GoogleMapService.DrawAdvancedMarkerAsync(markerId, position, content);
+    }
+
+    public async Task SetAdvancedMarkerPositionAsync(string markerId, LatLng position)
+    {
+        await GoogleMapService.SetAdvancedMarkerPositionAsync(markerId, position);
+    }
+
+    public async Task SetAdvancedMarkerContentAsync(string markerId, string content)
+    {
+        await GoogleMapService.SetAdvancedMarkerContentAsync(markerId, content);
+    }
+
+    public async Task SetCircleCenterAsync(string shapeId, double latitude, double longitude)
+    {
+        await GoogleMapService.SetCircleCenterAsync(shapeId, new LatLng { Lat = latitude, Lng = longitude });
+    }
+
     public async Task MaskMapAsync(Shape? shape = null, PolygonOptions? polygonOptions = null)
     {
         await GoogleMapService.MaskMapAsync(shape, polygonOptions);
@@ -255,6 +297,22 @@ public partial class GoogleMap : IAsyncDisposable
         await GeolocationService.GetCurrentPositionAsync(LocationResult, false, TimeSpan.FromSeconds(10));
     }
 
+    public async Task SetCenterAsync(double latitude, double longitude)
+    {
+        if (AnimateCenterChange)
+            await GoogleMapService.PanToAsync(latitude, longitude);
+        else
+            await GoogleMapService.SetCenterAsync(latitude, longitude);
+    }
+
+    private async Task SetCenterAsync(string address)
+    {
+        if (AnimateCenterChange)
+            await GoogleMapService.PanToAsync(address);
+        else
+            await GoogleMapService.SetCenterAsync(address);
+    }
+
     private async Task SetOptionsAsync()
     {
         await SetMapOptionsAsync();
@@ -272,6 +330,9 @@ public partial class GoogleMap : IAsyncDisposable
 
             if (PolygonOptions is not null)
                 drawingOptions.polygonOptions = PolygonOptions;
+
+            if (CircleOptions is not null)
+                drawingOptions.circleOptions = CircleOptions;
 
             if (((IDictionary<string, object>)drawingOptions).Keys.Count > 0)
                 await InvokeAsync(async () => await GoogleMapService.SetDrawingOptionsAsync(drawingOptions));
@@ -339,22 +400,6 @@ public partial class GoogleMap : IAsyncDisposable
                 await OnCurrentLocationDetected.InvokeAsync(Center);
             }
         }
-    }
-
-    private async Task SetCenterAsync(double latitude, double longitude)
-    {
-        if (AnimateCenterChange)
-            await GoogleMapService.PanToAsync(latitude, longitude);
-        else
-            await GoogleMapService.SetCenterAsync(latitude, longitude);
-    }
-
-    private async Task SetCenterAsync(string address)
-    {
-        if (AnimateCenterChange)
-            await GoogleMapService.PanToAsync(address);
-        else
-            await GoogleMapService.SetCenterAsync(address);
     }
 
     public async ValueTask DisposeAsync()

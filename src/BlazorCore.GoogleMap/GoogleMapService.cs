@@ -49,6 +49,10 @@ public sealed class GoogleMapService : IGoogleMapService
         {
             libraries.Add(nameof(GoogleLibrary.Geometry).ToLower());
         }
+        if (googleLibrary.HasFlag(GoogleLibrary.Marker))
+        {
+            libraries.Add(nameof(GoogleLibrary.Marker).ToLower());
+        }
 
         await _mapsJs.InvokeVoidAsync("init", apiKey, string.Join(",", libraries), mapType, mapContainerId, _eventDotNetRef);
     }
@@ -130,6 +134,42 @@ public sealed class GoogleMapService : IGoogleMapService
     {
         await CheckJsObjectAsync();
         await _mapsJs.InvokeVoidAsync("drawPolygon", MapContainerId, shape, polygonOptions, editable);
+    }
+
+    public async Task DrawCircleAsync(Shape shape, CircleOptions? circleOptions = null)
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("drawCircle", MapContainerId, shape, circleOptions);
+    }
+
+    public async Task DrawAdvancedMarkerAsync(string markerId, LatLng position, string content)
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("drawAdvancedMarker", MapContainerId, markerId, position, content);
+    }
+
+    public async Task SetAdvancedMarkerPositionAsync(string markerid, LatLng position)
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("setAdvancedMarkerPosition", MapContainerId, markerid, position);
+    }
+
+    public async Task SetAdvancedMarkerContentAsync(string markerid, string content)
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("setAdvancedMarkerContent", MapContainerId, markerid, content);
+    }
+
+    public async Task ClearAllCirclesAsync()
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("clearAllCircles", MapContainerId);
+    }
+
+    public async Task SetCircleCenterAsync(string circleId, LatLng center)
+    {
+        await CheckJsObjectAsync();
+        await _mapsJs.InvokeVoidAsync("setCircleCenter", MapContainerId, circleId, center);
     }
 
     public async Task MaskMapAsync(Shape? shape = null, PolygonOptions? polygonOptions = null)

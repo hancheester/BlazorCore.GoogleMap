@@ -1,0 +1,65 @@
+﻿.marker {
+    display: flex;
+    flex-direction: column;
+    background-color: #3e7dc0;
+    color: #fff;
+    font-size: 14px;
+    padding: 5px 8px;
+    position: relative;
+    transition: all 0.3s ease-out;
+}
+
+    .marker::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translate(-50%, 0);
+        transition: all 0.3s ease-out;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #3e7dc0;
+        z-index: 1;
+    }
+
+    .marker .icon {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .marker .details {
+        display: none;
+    }
+
+        .marker .details .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .marker .details .label {
+            color: #f4f4f4;
+            font-size: 10px;
+        }
+
+        .marker .details > div {
+            display: flex;
+            flex-grow: 1;
+        }
+
+    .marker.highlight {
+        width: auto;
+    }
+
+        .marker.highlight .icon {
+            margin-bottom: 10px;
+        }
+
+        .marker.highlight .details {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            gap: 10px;
+        }
