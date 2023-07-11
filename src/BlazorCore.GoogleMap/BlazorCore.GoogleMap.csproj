@@ -8,7 +8,7 @@
     <Authors>Han Chee Tan</Authors>
     <PackageTags>blazor;jsinterop;javasript;google map;</PackageTags>
     <Version>$(VersionPrefix)</Version>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <VersionPrefix>1.2.1</VersionPrefix>
     <RepositoryType>git</RepositoryType>
     <Copyright>©2023 Han Chee Tan</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
