@@ -74,8 +74,8 @@ window.initGoogleMaps = () => {
                         let bounds = [];
                         polygonBounds.forEach((bound) => {
                             bounds.push({
-                                Latitude: bound.lat(),
-                                Longitude: bound.lng(),
+                                lat: bound.lat(),
+                                lng: bound.lng(),
                             });
                         });
 
@@ -540,48 +540,6 @@ export function drawAdvancedMarker(elementId, markerId, position, content) {
             contentTag.className = "marker";
             contentTag.innerHTML = content;
 
-            //contentTag.innerHTML = `
-            //   <div class="marker">
-            //      <div class="icon">
-            //        ${content}
-            //      </div>
-            //      <div class="details">
-            //        <div class="info">
-            //          <div>
-            //            10 km/h
-            //          </div>
-            //          <div class="label">
-            //            Speed
-            //          </div>
-            //        </div>
-            //        <div class="info">
-            //          <div>
-            //            5 h 40 min
-            //          </div>
-            //          <div class="label">
-            //            State Duration
-            //          </div>
-            //        </div>
-            //        <div class="info">
-            //          <div>
-            //            SE
-            //          </div>
-            //          <div class="label">
-            //            Direction
-            //          </div>
-            //        </div>
-            //        <div class="info">
-            //          <div>
-            //            198 L
-            //          </div>
-            //          <div class="label">
-            //            Fuel Level
-            //          </div>
-            //        </div>
-            //      </div>
-            //    </div>
-            //`;
-
             const marker = new google.maps.marker.AdvancedMarkerElement({
                 map: mapWithDotnetRef.map,
                 position: position,
@@ -648,8 +606,8 @@ function updatePolygonBounds(elementId, polygonId) {
                 let bounds = [];
                 polygonBounds.forEach((bound) => {
                     bounds.push({
-                        Latitude: bound.lat(),
-                        Longitude: bound.lng(),
+                        lat: bound.lat(),
+                        lng: bound.lng(),
                     });
                 });
 
