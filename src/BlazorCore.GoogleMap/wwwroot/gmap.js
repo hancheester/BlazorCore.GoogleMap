@@ -488,7 +488,7 @@ export function computeArea(elementId, shapeId) {
             let shape = mapWithDotnetRef.polygons.find(x => x.id == shapeId);
             if (shape) {
                 let area = google.maps.geometry.spherical.computeArea(shape.getPath());
-                return (area / 10000).toFixed(0);
+                return area.toFixed(0);
             }
         }
     }

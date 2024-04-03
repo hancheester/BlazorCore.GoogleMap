@@ -8,9 +8,9 @@
     <Authors>Han Chee Tan</Authors>
     <PackageTags>blazor;jsinterop;javasript;google map;</PackageTags>
     <Version>$(VersionPrefix)</Version>
-    <VersionPrefix>1.2.1</VersionPrefix>
+    <VersionPrefix>1.2.2</VersionPrefix>
     <RepositoryType>git</RepositoryType>
-    <Copyright>©2023 Han Chee Tan</Copyright>
+    <Copyright>©2024 Han Chee Tan</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Description>Blazor component that renders and manages Google map.</Description>
     <RepositoryUrl>https://github.com/hancheester/BlazorCore.GoogleMap</RepositoryUrl>
