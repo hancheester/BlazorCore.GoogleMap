@@ -544,6 +544,7 @@ export function drawAdvancedMarker(elementId, markerId, position, content) {
                 map: mapWithDotnetRef.map,
                 position: position,
                 content: contentTag,
+                gmpClickable: true,
             });
 
             if (markerId) {
