@@ -1,3 +1,5 @@
+<div id="top"></div>
+
 ## BlazorCore GoogleMap
 [![Package Version](https://img.shields.io/nuget/v/BlazorCore.GoogleMap?label=Latest%20Version)](https://www.nuget.org/packages/BlazorCore.GoogleMap/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/BlazorCore.GoogleMap?label=Downloads)](https://www.nuget.org/packages/BlazorCore.GoogleMap/)
@@ -11,6 +13,8 @@ Blazor components that render Google Maps, encapsulating map control and managem
 ```sh
 dotnet add package BlazorCore.GoogleMap
 ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Usage
 Add using statement to your Blazor `<component/page>.razor` file. Or globally reference it into _Imports.razor file.
@@ -29,7 +33,22 @@ public static async Task Main(string[] args)
 }
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Dependences
 **BlazorCore.GoogleMap** package depends on other BlazorGore Nuget packages:
 - [BlazorCore.JSInterop](https://www.nuget.org/packages/BlazorCore.JSInterop)
 which handles JS Interop for Geolocation services.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### License
+Distributed under the Apache License. See `LICENSE` for more information.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Contact
+Han Chee - [@hancheester](https://x.com/hancheester) - hanchee@codecultivation.com
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
