@@ -50,6 +50,7 @@ Distributed under the Apache License. See `LICENSE` for more information.
 
 ## Contact
 Han Chee - [@hancheester](https://x.com/hancheester) - hanchee@codecultivation.com
+Project Link: https://github.com/hancheester/BlazorCore.GoogleMap
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
