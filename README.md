@@ -3,7 +3,8 @@
 ## BlazorCore GoogleMap
 [![Package Version](https://img.shields.io/nuget/v/BlazorCore.GoogleMap?label=Latest%20Version)](https://www.nuget.org/packages/BlazorCore.GoogleMap/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/BlazorCore.GoogleMap?label=Downloads)](https://www.nuget.org/packages/BlazorCore.GoogleMap/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/hancheester/BlazorCore.GoogleMap/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/hancheester/BlazorCore.GoogleMap/blob/master/LICENSE)
+[![LinkedIn](https://img.shields.io/badge/Linkedin-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/hanchee)
 
 ## About
 Blazor components that render Google Maps, encapsulating map control and management within .NET code. These components seamlessly function with both WebAssembly and Server-hosted Blazor models.
