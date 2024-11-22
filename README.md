@@ -42,12 +42,12 @@ which handles JS Interop for Geolocation services.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### License
+## License
 Distributed under the Apache License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Contact
+## Contact
 Han Chee - [@hancheester](https://x.com/hancheester) - hanchee@codecultivation.com
 
 <p align="right">(<a href="#top">back to top</a>)</p>
